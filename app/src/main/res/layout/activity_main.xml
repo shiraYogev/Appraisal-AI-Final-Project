@@ -31,5 +31,19 @@
         android:layout_below="@id/signUpButton"
         android:layout_marginTop="30dp" />
 
+    <Button
+        android:id="@+id/btnSignInGoogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/homePageButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="146dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="142dp"
+        android:layout_marginBottom="299dp"
+        android:text="google" />
+
 
 </RelativeLayout>
