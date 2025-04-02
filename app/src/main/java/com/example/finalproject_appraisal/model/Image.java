@@ -1,5 +1,6 @@
 package com.example.finalproject_appraisal.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +11,7 @@ import java.util.UUID;
  * and optional tags or labels related to the image.
  * It also provides functionality to display image information in a readable format.
  */
-public class Image {
+public class Image implements Serializable {
 
     // Enum for categories to make the categorization of images more robust and type-safe
     public enum Category {

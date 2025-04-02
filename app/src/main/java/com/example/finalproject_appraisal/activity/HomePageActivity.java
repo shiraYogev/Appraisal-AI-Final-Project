@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.finalproject_appraisal.R;
 import com.example.finalproject_appraisal.activity.newProject.ClientDetailsActivity;
+import com.example.finalproject_appraisal.activity.newProject.UploadImagesActivity;
 
 public class HomePageActivity extends AppCompatActivity {
     Button newProjectButton, myProjectsButton;
@@ -27,7 +28,7 @@ public class HomePageActivity extends AppCompatActivity {
         newProjectButton = findViewById(R.id.button_new_project);
         newProjectButton.setOnClickListener(v -> {
             // פתיחת אקטיביטי חדש ליצירת פרויקט
-            intent = new Intent(HomePageActivity.this, ClientDetailsActivity.class);
+            intent = new Intent(HomePageActivity.this, UploadImagesActivity.class);
             startActivity(intent);
         });
 
