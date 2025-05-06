@@ -1,5 +1,5 @@
 package com.example.finalproject_appraisal.activity;
-
+/**
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -53,3 +53,4 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 }
+**/

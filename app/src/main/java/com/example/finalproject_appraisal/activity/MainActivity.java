@@ -107,14 +107,14 @@ public class MainActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> {
             Log.d("MainActivity", "Login button clicked");
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            //startActivity(intent);
         });
 
         signUpButton.setOnClickListener(v -> {
             Log.d("MainActivity", "SignUp button clicked");
-            Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+           // startActivity(intent);
         });
 
 
