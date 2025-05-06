@@ -6,54 +6,51 @@
     android:fillViewport="true">
 
     <LinearLayout
-        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- כפתורי העלאת תמונות לכל קטגוריה -->
+        <!-- Exterior Image Upload -->
         <Button
             android:id="@+id/btnUploadExterior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="העלה תמונה של חזית הבניין"/>
 
+        <!-- Living Room Image Upload -->
         <Button
             android:id="@+id/btnUploadLivingRoom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="העלה תמונה של הסלון"/>
 
+        <!-- Kitchen Image Upload -->
         <Button
             android:id="@+id/btnUploadKitchen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="העלה תמונה של המטבח"/>
 
+        <!-- Bathroom Image Upload -->
         <Button
             android:id="@+id/btnUploadBathroom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="העלה תמונה של חדר הרחצה"/>
 
+        <!-- Bedroom Image Upload -->
         <Button
             android:id="@+id/btnUploadBedroom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="העלה תמונה של חדר השינה"/>
 
+        <!-- View Image Upload -->
         <Button
             android:id="@+id/btnUploadView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="העלה תמונה של הנוף"/>
-
-        <!-- כפתור Next למעבר לאקטיביטי הבא -->
-        <Button
-            android:id="@+id/btnNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Next"/>
     </LinearLayout>
 </ScrollView>
