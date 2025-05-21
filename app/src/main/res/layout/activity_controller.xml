@@ -58,6 +58,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.8" />
 
+    <Button
+        android:id="@+id/buttonFlooringClassifier"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:text="זיהוי ריצוף"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonDoorClassifier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.8" />
+
     <!-- Add more buttons here for additional classifiers -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

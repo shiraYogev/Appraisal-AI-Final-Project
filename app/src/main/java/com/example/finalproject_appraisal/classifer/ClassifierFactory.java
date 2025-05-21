@@ -4,9 +4,6 @@ package com.example.finalproject_appraisal.classifer;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.finalproject_appraisal.classifer.DoorDetectionActivity;
-import com.example.finalproject_appraisal.classifer.KitchenCabinetDetectionActivity;
-
 /**
  * Factory class to start different classifier activities
  */
@@ -16,6 +13,7 @@ public class ClassifierFactory {
     public enum ClassifierType {
         KITCHEN_CABINET,
         DOOR,
+        FLOORING,
         // Add more classifier types here as needed
     }
 
@@ -33,6 +31,9 @@ public class ClassifierFactory {
                 break;
             case DOOR:
                 intent = new Intent(context, DoorDetectionActivity.class);
+                break;
+            case FLOORING:  // ← ריצוף
+                intent = new Intent(context, FlooringDetectionActivity.class);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown classifier type: " + type);

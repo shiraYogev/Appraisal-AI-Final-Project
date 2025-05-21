@@ -30,6 +30,9 @@
         android:theme="@style/Theme.FinalProjectAppraisal"
         tools:targetApi="31">
         <activity
+            android:name=".classifer.FlooringDetectionActivity"
+            android:exported="false" />
+        <activity
             android:name=".classifer.ControllerActivity"
             android:exported="true" />
         <activity

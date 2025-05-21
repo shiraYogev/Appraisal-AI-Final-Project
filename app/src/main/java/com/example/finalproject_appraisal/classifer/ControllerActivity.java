@@ -32,6 +32,13 @@ public class ControllerActivity extends AppCompatActivity {
                 )
         );
 
+        binding.buttonFlooringClassifier.setOnClickListener(v ->
+                ClassifierFactory.startClassifier(
+                        this,
+                        ClassifierFactory.ClassifierType.FLOORING
+                )
+        );
+
         // ועוד לחצנים אם צריך...
     }
 }

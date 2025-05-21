@@ -1,5 +1,6 @@
 package com.example.finalproject_appraisal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 /**
  * The Project class represents a property appraisal project in the system. Each project involves
@@ -12,9 +13,20 @@ import java.util.List;
  */
 
 public class Project {
+
+    // Project identification
+    private String projectId;
+
+
     // Client and appraiser details
     private Client client; // The client requesting the appraisal
     private Appraiser appraiser; // The appraiser performing the appraisal
+
+
+    // Creation and update timestamps
+    private long creationDate;
+    private long lastUpdateDate;
+
 
     // Property details
     private String fullAddress; // Full address of the property
@@ -23,12 +35,14 @@ public class Project {
     private String buildingCondition; // Condition of the building (e.g., new, old, renovated)
     private int numberOfFloors; // Number of floors in the building
 
+
     // Apartment details
     private String apartmentNumber; // Apartment number
     private int floorNumber; // Floor number of the apartment
-    private int numberOfRooms; // Number of rooms in the apartment
+    private double numberOfRooms; // Number of rooms in the apartment (can be 2.5, 3.5, etc.)
     private double registeredArea; // Registered area of the apartment
     private double grossArea; // Gross area of the apartment
+
 
     // Physical features of the apartment
     private String flooringType; // Type of flooring (e.g., tile, wood)
@@ -39,23 +53,77 @@ public class Project {
     private boolean hasBars; // Whether the apartment has security bars on windows
     private List<String> airDirection; // Directions of air flow (e.g., north, south)
 
+
     // Additional facilities and services
+    //////////// check if i need this object or not !!!!!!!! ///////
+    private PhysicalFeatures physicalFeatures;
     private boolean hasElevator; // Whether the building has an elevator
     private boolean hasStorageRoom; // Whether there is a storage room
     private boolean hasAirConditioning; // Whether the apartment has air conditioning
     private boolean hasParking; // Whether there is parking space
     private boolean hasCentralHeating; // Whether the building has central heating
 
+
     // Property images
     private List<Image> propertyImages; // List of property images
+
 
     // Additional fields
     private String projectStatus; // Status of the project (e.g., in progress, completed)
     private String projectDescription; // General description of the project
 
+
+
+    //////////     Constructors:     ////////////
+
+    /**
+     * Default constructor for Firestore
+     */
+    public Project() {
+        this.creationDate = System.currentTimeMillis();
+        this.lastUpdateDate = System.currentTimeMillis();
+        this.projectStatus = "In Progress";
+        this.propertyImages = new ArrayList<Image>();
+    }
+
+
+    /**
+     * Constructor with required fields for initial project creation
+     */
+    public Project(String projectId) {
+        this();
+        this.projectId = projectId;
+    }
+
+
+    /**
+     * Constructor with all fields for complete project initialization
+     */
+    public Project(String projectId, Client client, Appraiser appraiser, String fullAddress, String location,
+                   String buildingType, String buildingCondition, int numberOfFloors,
+                   String apartmentNumber, int floorNumber, double numberOfRooms,
+                   double registeredArea, double grossArea) {
+        this();
+        this.projectId = projectId;
+        this.client = client;
+        this.appraiser = appraiser;
+        this.fullAddress = fullAddress;
+        this.location = location;
+        this.buildingType = buildingType;
+        this.buildingCondition = buildingCondition;
+        this.numberOfFloors = numberOfFloors;
+        this.apartmentNumber = apartmentNumber;
+        this.floorNumber = floorNumber;
+        this.numberOfRooms = numberOfRooms;
+        this.registeredArea = registeredArea;
+        this.grossArea = grossArea;
+    }
+
+
     // Constructor to initialize the project details
-    public Project(Client client, Appraiser appraiser, String fullAddress, String location,
+    public Project(String projectId, Client client, Appraiser appraiser, String fullAddress, String location,
                    String buildingType, String buildingCondition, int numberOfFloors) {
+        this.projectId = projectId;
         this.client = client;
         this.appraiser = appraiser;
         this.fullAddress = fullAddress;
@@ -85,13 +153,27 @@ public class Project {
         this.projectDescription = projectDescription;
     }
 
-    // Getters and setters for each field
+    public void updateLastUpdateDate() {
+        this.lastUpdateDate = System.currentTimeMillis();
+    }
+
+
+    // Getters and Setters
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
     public Client getClient() {
         return client;
     }
 
     public void setClient(Client client) {
         this.client = client;
+        updateLastUpdateDate();
     }
 
     public Appraiser getAppraiser() {
@@ -100,6 +182,23 @@ public class Project {
 
     public void setAppraiser(Appraiser appraiser) {
         this.appraiser = appraiser;
+        updateLastUpdateDate();
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public long getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(long lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 
     public String getFullAddress() {
@@ -108,6 +207,7 @@ public class Project {
 
     public void setFullAddress(String fullAddress) {
         this.fullAddress = fullAddress;
+        updateLastUpdateDate();
     }
 
     public String getLocation() {
@@ -116,6 +216,7 @@ public class Project {
 
     public void setLocation(String location) {
         this.location = location;
+        updateLastUpdateDate();
     }
 
     public String getBuildingType() {
@@ -124,6 +225,7 @@ public class Project {
 
     public void setBuildingType(String buildingType) {
         this.buildingType = buildingType;
+        updateLastUpdateDate();
     }
 
     public String getBuildingCondition() {
@@ -132,6 +234,7 @@ public class Project {
 
     public void setBuildingCondition(String buildingCondition) {
         this.buildingCondition = buildingCondition;
+        updateLastUpdateDate();
     }
 
     public int getNumberOfFloors() {
@@ -140,6 +243,7 @@ public class Project {
 
     public void setNumberOfFloors(int numberOfFloors) {
         this.numberOfFloors = numberOfFloors;
+        updateLastUpdateDate();
     }
 
     public String getApartmentNumber() {
@@ -148,6 +252,7 @@ public class Project {
 
     public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
+        updateLastUpdateDate();
     }
 
     public int getFloorNumber() {
@@ -156,14 +261,16 @@ public class Project {
 
     public void setFloorNumber(int floorNumber) {
         this.floorNumber = floorNumber;
+        updateLastUpdateDate();
     }
 
-    public int getNumberOfRooms() {
+    public double getNumberOfRooms() {
         return numberOfRooms;
     }
 
-    public void setNumberOfRooms(int numberOfRooms) {
+    public void setNumberOfRooms(double numberOfRooms) {
         this.numberOfRooms = numberOfRooms;
+        updateLastUpdateDate();
     }
 
     public double getRegisteredArea() {
@@ -172,6 +279,7 @@ public class Project {
 
     public void setRegisteredArea(double registeredArea) {
         this.registeredArea = registeredArea;
+        updateLastUpdateDate();
     }
 
     public double getGrossArea() {
@@ -180,6 +288,7 @@ public class Project {
 
     public void setGrossArea(double grossArea) {
         this.grossArea = grossArea;
+        updateLastUpdateDate();
     }
 
     public String getFlooringType() {
@@ -188,6 +297,7 @@ public class Project {
 
     public void setFlooringType(String flooringType) {
         this.flooringType = flooringType;
+        updateLastUpdateDate();
     }
 
     public String getKitchenCondition() {
@@ -196,6 +306,7 @@ public class Project {
 
     public void setKitchenCondition(String kitchenCondition) {
         this.kitchenCondition = kitchenCondition;
+        updateLastUpdateDate();
     }
 
     public String getEntranceDoorCondition() {
@@ -204,6 +315,7 @@ public class Project {
 
     public void setEntranceDoorCondition(String entranceDoorCondition) {
         this.entranceDoorCondition = entranceDoorCondition;
+        updateLastUpdateDate();
     }
 
     public String getInteriorDoorCondition() {
@@ -212,6 +324,7 @@ public class Project {
 
     public void setInteriorDoorCondition(String interiorDoorCondition) {
         this.interiorDoorCondition = interiorDoorCondition;
+        updateLastUpdateDate();
     }
 
     public String getWindowType() {
@@ -220,6 +333,7 @@ public class Project {
 
     public void setWindowType(String windowType) {
         this.windowType = windowType;
+        updateLastUpdateDate();
     }
 
     public boolean isHasBars() {
@@ -228,6 +342,7 @@ public class Project {
 
     public void setHasBars(boolean hasBars) {
         this.hasBars = hasBars;
+        updateLastUpdateDate();
     }
 
     public List<String> getAirDirection() {
@@ -236,6 +351,7 @@ public class Project {
 
     public void setAirDirection(List<String> airDirection) {
         this.airDirection = airDirection;
+        updateLastUpdateDate();
     }
 
     public boolean isHasElevator() {
@@ -244,6 +360,7 @@ public class Project {
 
     public void setHasElevator(boolean hasElevator) {
         this.hasElevator = hasElevator;
+        updateLastUpdateDate();
     }
 
     public boolean isHasStorageRoom() {
@@ -252,6 +369,7 @@ public class Project {
 
     public void setHasStorageRoom(boolean hasStorageRoom) {
         this.hasStorageRoom = hasStorageRoom;
+        updateLastUpdateDate();
     }
 
     public boolean isHasAirConditioning() {
@@ -260,6 +378,7 @@ public class Project {
 
     public void setHasAirConditioning(boolean hasAirConditioning) {
         this.hasAirConditioning = hasAirConditioning;
+        updateLastUpdateDate();
     }
 
     public boolean isHasParking() {
@@ -268,6 +387,7 @@ public class Project {
 
     public void setHasParking(boolean hasParking) {
         this.hasParking = hasParking;
+        updateLastUpdateDate();
     }
 
     public boolean isHasCentralHeating() {
@@ -276,6 +396,7 @@ public class Project {
 
     public void setHasCentralHeating(boolean hasCentralHeating) {
         this.hasCentralHeating = hasCentralHeating;
+        updateLastUpdateDate();
     }
 
     public List<Image> getPropertyImages() {
@@ -284,6 +405,15 @@ public class Project {
 
     public void setPropertyImages(List<Image> propertyImages) {
         this.propertyImages = propertyImages;
+        updateLastUpdateDate();
+    }
+
+    public void addPropertyImage(Image image) {
+        if (this.propertyImages == null) {
+            this.propertyImages = new ArrayList<>();
+        }
+        this.propertyImages.add(image);
+        updateLastUpdateDate();
     }
 
     public String getProjectStatus() {
@@ -292,6 +422,7 @@ public class Project {
 
     public void setProjectStatus(String projectStatus) {
         this.projectStatus = projectStatus;
+        updateLastUpdateDate();
     }
 
     public String getProjectDescription() {
@@ -300,5 +431,17 @@ public class Project {
 
     public void setProjectDescription(String projectDescription) {
         this.projectDescription = projectDescription;
+        updateLastUpdateDate();
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "projectId='" + projectId + '\'' +
+                ", client=" + (client != null ? client.getFullName() : "null") +
+                ", appraiser=" + (appraiser != null ? appraiser.getFullName() : "null") +
+                ", fullAddress='" + fullAddress + '\'' +
+                ", projectStatus='" + projectStatus + '\'' +
+                '}';
     }
 }

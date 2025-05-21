@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- כותרת -->
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="סיווג ריצוף"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- תצוגת התמונה -->
+    <ImageView
+        android:id="@+id/imageViewFlooring"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="#F0F0F0"
+        android:scaleType="centerInside"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"/>
+
+    <!-- כפתורי צילום וגלריה -->
+    <Button
+        android:id="@+id/buttonTakePhoto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="צלם"
+        app:layout_constraintTop_toBottomOf="@id/imageViewFlooring"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonGallery"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/buttonGallery"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="גלריה"
+        app:layout_constraintTop_toBottomOf="@id/imageViewFlooring"
+        app:layout_constraintStart_toEndOf="@id/buttonTakePhoto"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- כפתור סיווג -->
+    <Button
+        android:id="@+id/buttonClassify"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="סיווג"
+        app:layout_constraintTop_toBottomOf="@id/buttonTakePhoto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <!-- תצוגת התוצאה -->
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="תוצאה תופיע כאן"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/buttonClassify"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- לוגו טעינה -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
