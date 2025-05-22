@@ -27,4 +27,6 @@
     <string name="classify_cabinets">זהה ארונות</string>
     <string name="result_placeholder">תוצאות הזיהוי יופיעו כאן</string>
 
+    <string name="client_id_firebase" >1075313890760-n0038prsgstnd61tdgfc5avgubr9ca40.apps.googleusercontent.com</string>
+
 </resources>

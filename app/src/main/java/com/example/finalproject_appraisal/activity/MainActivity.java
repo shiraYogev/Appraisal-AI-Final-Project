@@ -1,129 +1,162 @@
 package com.example.finalproject_appraisal.activity;
-
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.IntentSenderRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.finalproject_appraisal.R;
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
-import com.google.android.gms.auth.api.identity.BeginSignInResult;
-import com.google.android.gms.auth.api.identity.Identity;
-import com.google.android.gms.auth.api.identity.SignInClient;
-import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button loginButton, signUpButton,homePageButton, googleButton;
-    SignInClient oneTapClient;
-    BeginSignInRequest signUpRequest;
-    private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
-    private boolean showOneTapUI = true;
+    private static final String TAG = "MainActivity";
+    private static final int RC_SIGN_IN = 100;
+
+    private FirebaseAuth firebaseAuth;
+    private GoogleSignInClient googleSignInClient;
+
+    private Button googleButton;
+    private Button loginButton;
+    private Button signUpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("MainActivity", "onCreate called");
+        // אתחול Firebase Auth
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        //התחברות עם גוגל שיראל מוסיפה
-        googleButton= findViewById(R.id.btnSignInGoogle);
-        oneTapClient = Identity.getSignInClient(this);
-        signUpRequest = BeginSignInRequest.builder()
-                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                        .setSupported(true)
-                        // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.web_client_id))
-                        // Show all accounts on the device.
-                        .setFilterByAuthorizedAccounts(false)
-                        .build())
+        // הגדרת Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.client_id_firebase))
+                .requestEmail()
                 .build();
 
-        ActivityResultLauncher<IntentSenderRequest> activityResultLauncher=
-                registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(), new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result){
-                      if(result.getResultCode() == MainActivity.RESULT_OK){
-                          try {
-                              SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
-                              String idToken = credential.getGoogleIdToken();
-                              if (idToken !=  null) {
-                                  // Got an ID token from Google. Use it to authenticate
-                                  // with your backend.
-                                  Log.d(TAG, "Got ID token.");
-                                  String email= credential.getId();
-                                  Toast.makeText(getApplicationContext(), "Email: "+ email, Toast.LENGTH_SHORT ).show();
-                              }
-                          } catch (ApiException e) {
-                              e.printStackTrace();
-                          }
-                      }
-                    }
-                });
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // אתחול כפתורים
+        initializeViews();
+        setupClickListeners();
+
+        // בדיקה אם המשתמש כבר מחובר
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+            updateUI(currentUser);
+        }
+    }
+
+    private void initializeViews() {
+        googleButton = findViewById(R.id.googleButton);
+        loginButton = findViewById(R.id.loginButton);
+        signUpButton = findViewById(R.id.signUpButton);
+    }
+
+    private void setupClickListeners() {
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                oneTapClient.beginSignIn(signUpRequest)
-                        .addOnSuccessListener(MainActivity.this, new OnSuccessListener<BeginSignInResult>() {
-                            @Override
-                            public void onSuccess(BeginSignInResult result) {
-                                IntentSenderRequest intentSenderRequest= new IntentSenderRequest.Builder(result.getPendingIntent().getIntentSender()).build();
-                                activityResultLauncher.launch(intentSenderRequest);
-                            }
-                        })
-                        .addOnFailureListener(MainActivity.this, new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // No Google Accounts found. Just continue presenting the signed-out UI.
-                                Log.d(TAG, e.getLocalizedMessage());
-                            }
-                        });
+            public void onClick(View v) {
+                signInWithGoogle();
             }
         });
 
-
-        // אם יש לך אובייקטים שאתה יוצר, הוסף כאן לוגים
-        loginButton = findViewById(R.id.loginButton);
-        signUpButton = findViewById(R.id.signUpButton);
-        homePageButton = findViewById(R.id.homePageButton);
-
-        loginButton.setOnClickListener(v -> {
-            Log.d("MainActivity", "Login button clicked");
-            //Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            //startActivity(intent);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // מעבר לדף התחברות
+                //Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                //startActivity(intent);
+            }
         });
 
-        signUpButton.setOnClickListener(v -> {
-            Log.d("MainActivity", "SignUp button clicked");
-            //Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
-           // startActivity(intent);
-        });
-
-
-        /////// tmp button for home page ////////
-        homePageButton.setOnClickListener(v -> {
-            Log.d("MainActivity", "home Page button clicked");
-            Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
-            startActivity(intent);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // מעבר לדף הרשמה
+                //Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+                //startActivity(intent);
+            }
         });
     }
 
+    // התחלת תהליך Google Sign-In
+    private void signInWithGoogle() {
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    // טיפול בתוצאת Google Sign-In
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // קבלת החשבון של Google
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null) {
+                    // אימות עם Firebase
+                    firebaseAuthWithGoogle(account);
+                }
+            } catch (ApiException e) {
+                // טיפול בכשל התחברות
+                Log.w(TAG, "Google sign in failed", e);
+                Toast.makeText(MainActivity.this, "התחברות Google נכשלה", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // אימות החשבון של Google עם Firebase
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        // קבלת פרטי האימות מחשבון Google
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+
+        // התחברות ל-Firebase באמצעות פרטי Google
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // אימות הצליח
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                        // הצגת הודעת ברכה עם שם המשתמש
+                        if (user != null && user.getDisplayName() != null) {
+                            Toast.makeText(MainActivity.this, "ברוך הבא " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "התחברות הצליחה!", Toast.LENGTH_SHORT).show();
+                        }
+
+                        // מעבר לדף הבא
+                        updateUI(user);
+                    } else {
+                        // אימות נכשל
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(MainActivity.this, "האימות נכשל", Toast.LENGTH_SHORT).show();
+                        updateUI(null);
+                    }
+                });
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            // המשתמש מחובר - מעבר לדף הבא
+            Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
+            startActivity(intent);
+            finish(); // סגירת Activity זה כדי למנוע חזרה למסך ההתחברות
+        }
+    }
 }
