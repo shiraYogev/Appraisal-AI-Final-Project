@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.finalproject_appraisal"
+    namespace = "com.example.finalprojectappraisal"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.finalproject_appraisal"
+        applicationId = "com.example.finalprojectappraisal"
         minSdk = 26
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
