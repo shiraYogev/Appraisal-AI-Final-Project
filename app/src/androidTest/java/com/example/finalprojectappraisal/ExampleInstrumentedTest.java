@@ -1,4 +1,4 @@
-package com.example.finalproject_appraisal;
+package com.example.finalprojectappraisal;
 
 import android.content.Context;
 
