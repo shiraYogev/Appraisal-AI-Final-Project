@@ -17,32 +17,27 @@ public class Project {
     // Project identification
     private String projectId;
 
-
     // Client and appraiser details
     private Client client; // The client requesting the appraisal
     private Appraiser appraiser; // The appraiser performing the appraisal
 
-
     // Creation and update timestamps
     private long creationDate;
     private long lastUpdateDate;
-
 
     // Property details
     private String fullAddress; // Full address of the property
     private String location; // Location of the property
     private String buildingType; // Type of the building (e.g., apartment, house)
     private String buildingCondition; // Condition of the building (e.g., new, old, renovated)
-    private int numberOfFloors; // Number of floors in the building
-
+    private Integer numberOfFloors; // Number of floors in the building (nullable)
 
     // Apartment details
     private String apartmentNumber; // Apartment number
-    private int floorNumber; // Floor number of the apartment
-    private double numberOfRooms; // Number of rooms in the apartment (can be 2.5, 3.5, etc.)
-    private double registeredArea; // Registered area of the apartment
-    private double grossArea; // Gross area of the apartment
-
+    private Integer floorNumber; // Floor number of the apartment (nullable)
+    private Double numberOfRooms; // Number of rooms in the apartment (nullable)
+    private Double registeredArea; // Registered area of the apartment (nullable)
+    private Double grossArea; // Gross area of the apartment (nullable)
 
     // Physical features of the apartment
     private String flooringType; // Type of flooring (e.g., tile, wood)
@@ -53,9 +48,7 @@ public class Project {
     private boolean hasBars; // Whether the apartment has security bars on windows
     private List<String> airDirection; // Directions of air flow (e.g., north, south)
 
-
     // Additional facilities and services
-    //////////// check if i need this object or not !!!!!!!! ///////
     private PhysicalFeatures physicalFeatures;
     private boolean hasElevator; // Whether the building has an elevator
     private boolean hasStorageRoom; // Whether there is a storage room
@@ -63,16 +56,12 @@ public class Project {
     private boolean hasParking; // Whether there is parking space
     private boolean hasCentralHeating; // Whether the building has central heating
 
-
     // Property images
     private List<Image> propertyImages; // List of property images
-
 
     // Additional fields
     private String projectStatus; // Status of the project (e.g., in progress, completed)
     private String projectDescription; // General description of the project
-
-
 
     //////////     Constructors:     ////////////
 
@@ -86,7 +75,6 @@ public class Project {
         this.propertyImages = new ArrayList<Image>();
     }
 
-
     /**
      * Constructor with required fields for initial project creation
      */
@@ -95,14 +83,13 @@ public class Project {
         this.projectId = projectId;
     }
 
-
     /**
      * Constructor with all fields for complete project initialization
      */
     public Project(String projectId, Client client, Appraiser appraiser, String fullAddress, String location,
-                   String buildingType, String buildingCondition, int numberOfFloors,
-                   String apartmentNumber, int floorNumber, double numberOfRooms,
-                   double registeredArea, double grossArea) {
+                   String buildingType, String buildingCondition, Integer numberOfFloors,
+                   String apartmentNumber, Integer floorNumber, Double numberOfRooms,
+                   Double registeredArea, Double grossArea) {
         this();
         this.projectId = projectId;
         this.client = client;
@@ -119,10 +106,9 @@ public class Project {
         this.grossArea = grossArea;
     }
 
-
     // Constructor to initialize the project details
     public Project(String projectId, Client client, Appraiser appraiser, String fullAddress, String location,
-                   String buildingType, String buildingCondition, int numberOfFloors) {
+                   String buildingType, String buildingCondition, Integer numberOfFloors) {
         this.projectId = projectId;
         this.client = client;
         this.appraiser = appraiser;
@@ -131,32 +117,12 @@ public class Project {
         this.buildingType = buildingType;
         this.buildingCondition = buildingCondition;
         this.numberOfFloors = numberOfFloors;
-        this.apartmentNumber = apartmentNumber;
-        this.floorNumber = floorNumber;
-        this.numberOfRooms = numberOfRooms;
-        this.registeredArea = registeredArea;
-        this.grossArea = grossArea;
-        this.flooringType = flooringType;
-        this.kitchenCondition = kitchenCondition;
-        this.entranceDoorCondition = entranceDoorCondition;
-        this.interiorDoorCondition = interiorDoorCondition;
-        this.windowType = windowType;
-        this.hasBars = hasBars;
-        this.airDirection = airDirection;
-        this.hasElevator = hasElevator;
-        this.hasStorageRoom = hasStorageRoom;
-        this.hasAirConditioning = hasAirConditioning;
-        this.hasParking = hasParking;
-        this.hasCentralHeating = hasCentralHeating;
-        this.propertyImages = propertyImages;
-        this.projectStatus = projectStatus;
-        this.projectDescription = projectDescription;
+        // שאר השדות (אם רוצים אפשר להוסיף כאן בהמשך)
     }
 
     public void updateLastUpdateDate() {
         this.lastUpdateDate = System.currentTimeMillis();
     }
-
 
     // Getters and Setters
     public String getProjectId() {
@@ -237,11 +203,11 @@ public class Project {
         updateLastUpdateDate();
     }
 
-    public int getNumberOfFloors() {
+    public Integer getNumberOfFloors() {
         return numberOfFloors;
     }
 
-    public void setNumberOfFloors(int numberOfFloors) {
+    public void setNumberOfFloors(Integer numberOfFloors) {
         this.numberOfFloors = numberOfFloors;
         updateLastUpdateDate();
     }
@@ -255,38 +221,38 @@ public class Project {
         updateLastUpdateDate();
     }
 
-    public int getFloorNumber() {
+    public Integer getFloorNumber() {
         return floorNumber;
     }
 
-    public void setFloorNumber(int floorNumber) {
+    public void setFloorNumber(Integer floorNumber) {
         this.floorNumber = floorNumber;
         updateLastUpdateDate();
     }
 
-    public double getNumberOfRooms() {
+    public Double getNumberOfRooms() {
         return numberOfRooms;
     }
 
-    public void setNumberOfRooms(double numberOfRooms) {
+    public void setNumberOfRooms(Double numberOfRooms) {
         this.numberOfRooms = numberOfRooms;
         updateLastUpdateDate();
     }
 
-    public double getRegisteredArea() {
+    public Double getRegisteredArea() {
         return registeredArea;
     }
 
-    public void setRegisteredArea(double registeredArea) {
+    public void setRegisteredArea(Double registeredArea) {
         this.registeredArea = registeredArea;
         updateLastUpdateDate();
     }
 
-    public double getGrossArea() {
+    public Double getGrossArea() {
         return grossArea;
     }
 
-    public void setGrossArea(double grossArea) {
+    public void setGrossArea(Double grossArea) {
         this.grossArea = grossArea;
         updateLastUpdateDate();
     }
