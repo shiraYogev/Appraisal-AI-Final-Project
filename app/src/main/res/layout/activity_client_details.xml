@@ -31,6 +31,12 @@
         android:inputType="phone"
         android:hint="@string/phone_number"/>
 
+    <EditText
+        android:id="@+id/fullAddressEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/full_address"/>
+
     <Button
         android:id="@+id/saveClientButton"
         android:layout_width="match_parent"
