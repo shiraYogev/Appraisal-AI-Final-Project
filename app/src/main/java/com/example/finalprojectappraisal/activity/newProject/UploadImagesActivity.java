@@ -14,10 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finalprojectappraisal.R;
+import com.example.finalprojectappraisal.classifer.gemini.GeminiPrompts;
 import com.example.finalprojectappraisal.database.ProjectRepository;
 import com.example.finalprojectappraisal.model.Image;
 import com.example.finalprojectappraisal.classifer.ImageCategorySection;
-import com.example.finalprojectappraisal.classifer.GeminiHelper;
+import com.example.finalprojectappraisal.classifer.gemini.GeminiHelper;
 import com.example.finalprojectappraisal.adapter.ImageCategoriesAdapter;
 
 import java.util.Arrays;
@@ -46,13 +47,15 @@ public class UploadImagesActivity extends AppCompatActivity {
         }
 
         categories = Arrays.asList(
-                new ImageCategorySection("מטבח", Image.Category.KITCHEN, "זהה ארונות ומשטח עבודה במטבח..."),
-                new ImageCategorySection("סלון", Image.Category.LIVING_ROOM, "זהה מאפייני סלון..."),
-                new ImageCategorySection("חזית", Image.Category.EXTERIOR, "זהה מצב חזית הבית..."),
-                new ImageCategorySection("חדר רחצה", Image.Category.BATHROOM, "זהה כלים סניטריים..."),
-                new ImageCategorySection("חדר שינה", Image.Category.BEDROOM, "זהה ריהוט בחדר שינה..."),
-                new ImageCategorySection("נוף", Image.Category.VIEW, "זהה את הנוף מהדירה...")
+                new ImageCategorySection("דלת כניסה", Image.Category.ENTRANCE_DOOR, GeminiPrompts.ENTRANCE_DOOR_PROMPT),
+                new ImageCategorySection("מטבח", Image.Category.KITCHEN, GeminiPrompts.KITCHEN_PROMPT),
+                new ImageCategorySection("סלון", Image.Category.LIVING_ROOM, GeminiPrompts.LIVING_ROOM_PROMPT),
+                new ImageCategorySection("חזית", Image.Category.EXTERIOR, "זהה מצב חזית הבית..."), // אם תרצי גם לחזית – תנסחי פרומפט ותוסיפי ל-GeminiPrompts!
+                new ImageCategorySection("חדר רחצה", Image.Category.BATHROOM, GeminiPrompts.BATHROOM_PROMPT),
+                new ImageCategorySection("חדר שינה", Image.Category.BEDROOM, GeminiPrompts.BEDROOM_PROMPT),
+                new ImageCategorySection("נוף", Image.Category.VIEW, "זהה את הנוף מהדירה...") // כנ"ל
         );
+
 
         RecyclerView recyclerCategories = findViewById(R.id.recyclerCategories);
         recyclerCategories.setLayoutManager(new LinearLayoutManager(this));
