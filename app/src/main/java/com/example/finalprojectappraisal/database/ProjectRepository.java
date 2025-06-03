@@ -13,6 +13,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.finalprojectappraisal.model.Image;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.android.gms.tasks.OnFailureListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -305,6 +308,66 @@ public class ProjectRepository {
                 })
                 .addOnFailureListener(e -> errorMessage.setValue(FirestoreConstants.ERROR_DELETING_PROJECT + ": " + e.getMessage()));
     }
+
+    // ========================= IMAGE MANAGEMENT =========================
+
+
+    public void addImageToProject(String projectId, Image image, OnCompleteListener<Void> listener) {
+        if (projectId == null || image == null) {
+            handleError("Project ID and Image are required", listener);
+            return;
+        }
+        db.collection(FirestoreConstants.COLLECTION_PROJECTS)
+                .document(projectId)
+                .collection("images")
+                .document(image.getId())
+                .set(image.toMap()) // ממפה את Image ל-Map לשמירה ב-DB
+                .addOnCompleteListener(listener)
+                .addOnFailureListener(e -> errorMessage.setValue("שגיאה בהעלאת תמונה: " + e.getMessage()));
+    }
+
+    public void updateImageInProject(String projectId, Image image, OnCompleteListener<Void> listener) {
+        if (projectId == null || image == null) {
+            handleError("Project ID and Image are required", listener);
+            return;
+        }
+        db.collection(FirestoreConstants.COLLECTION_PROJECTS)
+                .document(projectId)
+                .collection("images")
+                .document(image.getId())
+                .set(image.toMap())
+                .addOnCompleteListener(listener)
+                .addOnFailureListener(e -> errorMessage.setValue("שגיאה בעדכון תמונה: " + e.getMessage()));
+    }
+
+    public void deleteImageFromProject(String projectId, String imageId, OnCompleteListener<Void> listener) {
+        if (projectId == null || imageId == null) {
+            handleError("Project ID and Image ID are required", listener);
+            return;
+        }
+        db.collection(FirestoreConstants.COLLECTION_PROJECTS)
+                .document(projectId)
+                .collection("images")
+                .document(imageId)
+                .delete()
+                .addOnCompleteListener(listener)
+                .addOnFailureListener(e -> errorMessage.setValue("שגיאה במחיקת תמונה: " + e.getMessage()));
+    }
+
+    // שליפת כל התמונות של פרויקט:
+    public void getImagesForProject(String projectId, OnCompleteListener<QuerySnapshot> listener) {
+        if (projectId == null) {
+            handleError("Project ID is required", null);
+            return;
+        }
+        db.collection(FirestoreConstants.COLLECTION_PROJECTS)
+                .document(projectId)
+                .collection("images")
+                .get()
+                .addOnCompleteListener(listener)
+                .addOnFailureListener(e -> errorMessage.setValue("שגיאה בטעינת תמונות: " + e.getMessage()));
+    }
+
 
     // ========================= UTILITY METHODS =========================
 

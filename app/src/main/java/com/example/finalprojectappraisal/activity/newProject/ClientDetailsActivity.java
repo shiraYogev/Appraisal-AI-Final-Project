@@ -74,7 +74,7 @@ public class ClientDetailsActivity extends AppCompatActivity {
                 String projectId = project.getProjectId();
 
                 // מעבר לפעילות הבאה
-                Intent intent = new Intent(ClientDetailsActivity.this, PropertyDetailsActivity.class);
+                Intent intent = new Intent(ClientDetailsActivity.this, UploadImagesActivity.class);
                 intent.putExtra("projectId", projectId); // להעביר projectId הלאה
                 startActivity(intent);
                 finish();

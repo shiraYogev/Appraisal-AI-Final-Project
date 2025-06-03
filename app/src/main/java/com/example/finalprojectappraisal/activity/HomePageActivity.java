@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.finalprojectappraisal.R;
 import com.example.finalprojectappraisal.activity.newProject.ClientDetailsActivity;
+import com.example.finalprojectappraisal.activity.newProject.UploadImagesActivity;
 
 public class HomePageActivity extends AppCompatActivity {
-    Button newProjectButton, myProjectsButton;
+    Button newProjectButton, myProjectsButton, uploadImagesButton;
     Intent intent;
 
     @Override
@@ -33,6 +34,13 @@ public class HomePageActivity extends AppCompatActivity {
         myProjectsButton.setOnClickListener(v -> {
             // פתיחת אקטיביטי של הפרויקטים שלי
             intent = new Intent(HomePageActivity.this, MyProjectsActivity.class);
+            startActivity(intent);
+        });
+
+        uploadImagesButton = findViewById(R.id.button_upload_images);
+        uploadImagesButton.setOnClickListener(v -> {
+
+            intent = new Intent(HomePageActivity.this, UploadImagesActivity.class);
             startActivity(intent);
         });
     }
