@@ -1,56 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fillViewport="true">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFF">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="תמונות הנכס לפי קטגוריות"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/btnSaveAndContinue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:text="שמור והמשך לפרטי נכס"
+        android:layout_margin="16dp"
+        />
 
-        <!-- Exterior Image Upload -->
-        <Button
-            android:id="@+id/btnUploadExterior"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="העלה תמונה של חזית הבניין"/>
-
-        <!-- Living Room Image Upload -->
-        <Button
-            android:id="@+id/btnUploadLivingRoom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="העלה תמונה של הסלון"/>
-
-        <!-- Kitchen Image Upload -->
-        <Button
-            android:id="@+id/btnUploadKitchen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="העלה תמונה של המטבח"/>
-
-        <!-- Bathroom Image Upload -->
-        <Button
-            android:id="@+id/btnUploadBathroom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="העלה תמונה של חדר הרחצה"/>
-
-        <!-- Bedroom Image Upload -->
-        <Button
-            android:id="@+id/btnUploadBedroom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="העלה תמונה של חדר השינה"/>
-
-        <!-- View Image Upload -->
-        <Button
-            android:id="@+id/btnUploadView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="העלה תמונה של הנוף"/>
-    </LinearLayout>
-</ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCategories"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:clipToPadding="false"/>
+</LinearLayout>

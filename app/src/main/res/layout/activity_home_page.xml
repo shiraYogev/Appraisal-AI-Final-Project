@@ -21,4 +21,11 @@
         android:text="הפרויקטים שלי"
         android:textSize="18sp" />
 
+    <Button
+        android:id="@+id/button_upload_images"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="העלאת תמונות"
+        android:textSize="18sp" />
+
 </LinearLayout>
