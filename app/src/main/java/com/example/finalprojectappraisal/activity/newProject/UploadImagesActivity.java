@@ -7,12 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.finalprojectappraisal.R;
 import com.example.finalprojectappraisal.classifer.gemini.GeminiPrompts;
 import com.example.finalprojectappraisal.database.ProjectRepository;
@@ -20,7 +18,6 @@ import com.example.finalprojectappraisal.model.Image;
 import com.example.finalprojectappraisal.classifer.ImageCategorySection;
 import com.example.finalprojectappraisal.classifer.gemini.GeminiHelper;
 import com.example.finalprojectappraisal.adapter.ImageCategoriesAdapter;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,12 +47,11 @@ public class UploadImagesActivity extends AppCompatActivity {
                 new ImageCategorySection("דלת כניסה", Image.Category.ENTRANCE_DOOR, GeminiPrompts.ENTRANCE_DOOR_PROMPT),
                 new ImageCategorySection("מטבח", Image.Category.KITCHEN, GeminiPrompts.KITCHEN_PROMPT),
                 new ImageCategorySection("סלון", Image.Category.LIVING_ROOM, GeminiPrompts.LIVING_ROOM_PROMPT),
-                new ImageCategorySection("חזית", Image.Category.EXTERIOR, "זהה מצב חזית הבית..."), // אם תרצי גם לחזית – תנסחי פרומפט ותוסיפי ל-GeminiPrompts!
+                new ImageCategorySection("חזית", Image.Category.EXTERIOR, "זהה מצב חזית הבית..."),
                 new ImageCategorySection("חדר רחצה", Image.Category.BATHROOM, GeminiPrompts.BATHROOM_PROMPT),
                 new ImageCategorySection("חדר שינה", Image.Category.BEDROOM, GeminiPrompts.BEDROOM_PROMPT),
-                new ImageCategorySection("נוף", Image.Category.VIEW, "זהה את הנוף מהדירה...") // כנ"ל
+                new ImageCategorySection("נוף", Image.Category.VIEW, "זהה את הנוף מהדירה...")
         );
-
 
         RecyclerView recyclerCategories = findViewById(R.id.recyclerCategories);
         recyclerCategories.setLayoutManager(new LinearLayoutManager(this));
@@ -74,17 +70,9 @@ public class UploadImagesActivity extends AppCompatActivity {
             boolean imageAdded = false;
             for (ImageCategorySection section : categories) {
                 for (Image img : section.images) {
-                    if (img == null) {
-                        Log.e("UploadImagesActivity", "נמצא image == null");
-                        continue;
-                    }
-                    if (img.getUrl() == null || img.getCategory() == null) {
-                        Log.e("UploadImagesActivity", "חסר ערך ל-url או ל-category");
-                        continue;
-                    }
-                    ProjectRepository.getInstance().addImageToProject(projectId, img, task -> {
-                        // טיפול בשגיאה/הצלחה
-                    });
+                    if (img == null) continue;
+                    if (img.getUrl() == null || img.getCategory() == null) continue;
+                    ProjectRepository.getInstance().addImageToProject(projectId, img, task -> {});
                     imageAdded = true;
                 }
             }
@@ -102,7 +90,6 @@ public class UploadImagesActivity extends AppCompatActivity {
                 Log.e("UploadImagesActivity", "שגיאה במעבר אקטיביטי", e);
             }
         });
-
     }
 
     @Override
@@ -116,10 +103,10 @@ public class UploadImagesActivity extends AppCompatActivity {
             img.setCategory(pendingSection.category);
             img.setDescription("מסווג תמונה, אנא המתן..."); // הודעה ברורה
 
-            // הוסף את התמונה לרשימה
+            // הוסף את התמונה לקטגוריה המתאימה
             pendingSection.images.add(img);
 
-            // עדכון מיידי של ה-UI
+            // עדכון UI מיידי
             int categoryIndex = categories.indexOf(pendingSection);
             if (categoryIndex != -1) {
                 categoriesAdapter.notifyImageChanged(categoryIndex);
@@ -130,20 +117,9 @@ public class UploadImagesActivity extends AppCompatActivity {
                 @Override
                 public void onResult(String result) {
                     runOnUiThread(() -> {
-                        // עדכון התיאור
                         img.setDescription(result);
-
-                        // עדכון ה-UI - נסה כמה דרכים
                         int categoryIndex = categories.indexOf(pendingSection);
-                        if (categoryIndex != -1) {
-                            // אופציה 1: עדכן ספציפית את הקטגוריה
-                            categoriesAdapter.notifyImageChanged(categoryIndex);
-
-                            // אופציה 2: גם עדכן את כל ה-adapter כגיבוי
-                            categoriesAdapter.notifyDataSetChanged();
-                        }
-
-                        // הצגת toast למשתמש
+                        if (categoryIndex != -1) categoriesAdapter.notifyImageChanged(categoryIndex);
                         Toast.makeText(UploadImagesActivity.this, "סיווג הושלם!", Toast.LENGTH_SHORT).show();
                     });
                 }
@@ -152,13 +128,8 @@ public class UploadImagesActivity extends AppCompatActivity {
                 public void onError(String error) {
                     runOnUiThread(() -> {
                         img.setDescription("שגיאה בסיווג: " + error);
-
                         int categoryIndex = categories.indexOf(pendingSection);
-                        if (categoryIndex != -1) {
-                            categoriesAdapter.notifyImageChanged(categoryIndex);
-                            categoriesAdapter.notifyDataSetChanged(); // גיבוי
-                        }
-
+                        if (categoryIndex != -1) categoriesAdapter.notifyImageChanged(categoryIndex);
                         Toast.makeText(UploadImagesActivity.this, "שגיאה בסיווג", Toast.LENGTH_SHORT).show();
                     });
                 }

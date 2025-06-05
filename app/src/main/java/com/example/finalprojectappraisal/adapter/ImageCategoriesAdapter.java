@@ -8,37 +8,29 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.finalprojectappraisal.R;
-import com.example.finalprojectappraisal.model.Image;
 import com.example.finalprojectappraisal.classifer.ImageCategorySection;
+import com.example.finalprojectappraisal.model.Image;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ImageCategoriesAdapter extends RecyclerView.Adapter<ImageCategoriesAdapter.CategoryViewHolder> {
 
     private final List<ImageCategorySection> categories;
-    private final List<ImagesAdapter> imagesAdapters;
     private final Context context;
+    private final OnAddImageListener addImageListener;
 
     public interface OnAddImageListener {
         void onAddImage(ImageCategorySection section);
     }
 
-    private final OnAddImageListener addImageListener;
-
     public ImageCategoriesAdapter(List<ImageCategorySection> categories, Context context, OnAddImageListener listener) {
         this.categories = categories;
         this.context = context;
         this.addImageListener = listener;
-        this.imagesAdapters = new ArrayList<>();
-        // יוצר Adapter פנימי קבוע לכל קטגוריה
-        for (ImageCategorySection section : categories) {
-            imagesAdapters.add(new ImagesAdapter(section.images));
-        }
     }
 
     @NonNull
@@ -53,16 +45,35 @@ public class ImageCategoriesAdapter extends RecyclerView.Adapter<ImageCategories
         ImageCategorySection section = categories.get(position);
         holder.txtTitle.setText(section.title);
 
-        if (holder.recyclerImages.getLayoutManager() == null) {
-            holder.recyclerImages.setLayoutManager(
-                    new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            );
-        }
+        // יצירת ה-adapter עם reference לעמדה הנוכחית
+        final int currentPosition = position;  // שמירת העמדה הנוכחית
+        ImagePagerAdapter pagerAdapter = new ImagePagerAdapter(
+                section.images,
+                new ImagePagerAdapter.OnImageActionListener() {
+                    @Override
+                    public void onDelete(int imagePosition) {
+                        section.images.remove(imagePosition);
+                        // עדכון ה-ViewPager
+                        holder.viewPagerImages.getAdapter().notifyItemRemoved(imagePosition);
+                        // עדכון הכותרת אם צריך (למשל מספר תמונות)
+                        notifyItemChanged(currentPosition);
+                    }
 
-        // Adapter פנימי קבוע לכל קטגוריה
-        ImagesAdapter imagesAdapter = imagesAdapters.get(position);
-        holder.recyclerImages.setAdapter(imagesAdapter);
+                    @Override
+                    public void onDescriptionChanged(int imagePosition, String newText) {
+                        if (imagePosition < section.images.size()) {
+                            section.images.get(imagePosition).setDescription(newText);
+                        }
+                    }
 
+                    @Override
+                    public void onImageClick(int imagePosition) {
+                        // הגדלת תמונה או פעולות אחרות
+                    }
+                }
+        );
+
+        holder.viewPagerImages.setAdapter(pagerAdapter);
         holder.btnAddImage.setOnClickListener(v -> addImageListener.onAddImage(section));
     }
 
@@ -72,61 +83,21 @@ public class ImageCategoriesAdapter extends RecyclerView.Adapter<ImageCategories
     }
 
     /**
-     * עדכן קטגוריה מסוימת (רענן את התמונות הפנימיות)
+     * רענון של קטגוריה מסוימת (למשל אחרי הוספת תמונה)
      */
     public void notifyImageChanged(int categoryPosition) {
-        if (categoryPosition >= 0 && categoryPosition < imagesAdapters.size()) {
-            // עדכן את ה-adapter הפנימי
-            ImagesAdapter adapter = imagesAdapters.get(categoryPosition);
-            adapter.notifyDataSetChanged();
-
-            // גם עדכן את הקטגוריה עצמה (למקרה שיש בעיה)
-            notifyItemChanged(categoryPosition);
-        }
-    }
-
-    /**
-     * הוסף תמונה לקטגוריה ועדכן את ה-UI
-     */
-    public void addImageToCategory(int categoryPosition, Image image) {
-        if (categoryPosition >= 0 && categoryPosition < categories.size()) {
-            ImageCategorySection section = categories.get(categoryPosition);
-            section.images.add(image);
-
-            // עדכן את ה-adapter הפנימי
-            ImagesAdapter adapter = imagesAdapters.get(categoryPosition);
-            adapter.notifyItemInserted(section.images.size() - 1);
-        }
-    }
-
-    /**
-     * עדכן תמונה ספציפית בקטגוריה
-     */
-    public void updateImageInCategory(int categoryPosition, int imagePosition) {
-        if (categoryPosition >= 0 && categoryPosition < imagesAdapters.size()) {
-            ImagesAdapter adapter = imagesAdapters.get(categoryPosition);
-            adapter.notifyItemChanged(imagePosition);
-        }
-    }
-
-    /**
-     * עדכן את כל הקטגוריות (אם יש שינוי כללי)
-     */
-    public void notifyAllImagesChanged() {
-        for (ImagesAdapter adapter : imagesAdapters) {
-            adapter.notifyDataSetChanged();
-        }
+        notifyItemChanged(categoryPosition);
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle;
-        RecyclerView recyclerImages;
+        ViewPager2 viewPagerImages;
         Button btnAddImage;
 
         CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             txtTitle = itemView.findViewById(R.id.txtCategoryTitle);
-            recyclerImages = itemView.findViewById(R.id.recyclerImages);
+            viewPagerImages = itemView.findViewById(R.id.viewPagerImages);
             btnAddImage = itemView.findViewById(R.id.btnAddImage);
         }
     }
