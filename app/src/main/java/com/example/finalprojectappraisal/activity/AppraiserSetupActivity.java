@@ -60,7 +60,7 @@ public class AppraiserSetupActivity extends AppCompatActivity {
 
         if (currentUser == null) {
             // User not authenticated, redirect to login
-            startActivity(new Intent(this, LoginActivity.class));
+            //startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
