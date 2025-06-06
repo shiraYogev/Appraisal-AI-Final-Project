@@ -1,7 +1,9 @@
 package com.example.finalprojectappraisal.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -12,121 +14,143 @@ import java.util.UUID;
  */
 public class Image {
 
-    // Enum for categories to make the categorization of images more robust and type-safe
     public enum Category {
-        EXTERIOR, LIVING_ROOM, KITCHEN, BATHROOM, BEDROOM, VIEW, OTHER
+        EXTERIOR, LIVING_ROOM, KITCHEN, BATHROOM, BEDROOM, VIEW, DINING_ROOM, ENTRANCE_DOOR,
+        BALCONY, STORAGE, HALLWAY, ENTRANCE, GARDEN, ELEVATOR, PARKING, OTHER
     }
 
-    private String id;        // Unique identifier for the image
-    private String url;       // URL of the image (location of the image in the cloud or server)
-    private Category category; // Category of the image (e.g., front view, living room, kitchen, etc.)
-    private List<AiImageTag> aiTags; // Tags related to the image (e.g., AI-detected features)
-    private String description; // Optional description of the image (e.g., a caption)
-    private String uploadDate; // Upload date in ISO format (YYYY-MM-DD)
-    private String propertyId; // The ID of the property this image belongs to
+    public enum Subcategory {
+        CABINETS, WORKTOP, SINK, FLOOR, DOOR, WINDOW, LIGHTING, FURNITURE,
+        SHOWER, BATHTUB, TOILET, CLOSET, SHELVES, APPLIANCES, WALLS, CEILING, OTHER
+    }
 
-    // Constructor
-    public Image(String url, Category category, String propertyId, String description, List<AiImageTag> aiTags, boolean isVerified) {
-        this.id = generateUniqueId(); // Generate unique ID
+    private String id;
+    private String url;
+    private String projectId;
+    private Category category;
+    private List<Subcategory> subcategories;
+    private Map<Subcategory, String> aiClassifications; // תוצאת סיווג Gemini לכל תת־קטגוריה
+    private String description;
+    private String uploadDate;
+    private List<String> labels;
+    private boolean isVerified;
+    private Map<Subcategory, String> finalClassification; // תוצאה סופית אם נערך ידנית
+
+    // בנאי מלא
+    public Image(String url, String projectId, Category category,
+                 List<Subcategory> subcategories, Map<Subcategory, String> aiClassifications,
+                 String description, List<String> labels, boolean isVerified,
+                 Map<Subcategory, String> finalClassification) {
+        this.id = UUID.randomUUID().toString();
         this.url = url;
+        this.projectId = projectId;
         this.category = category;
-        this.aiTags = aiTags != null ? aiTags : new ArrayList<>();
+        this.subcategories = subcategories != null ? subcategories : new ArrayList<>();
+        this.aiClassifications = aiClassifications != null ? aiClassifications : new HashMap<>();
         this.description = description;
-        this.uploadDate = java.time.LocalDate.now().toString(); // Set upload date to current date
-        this.propertyId = propertyId;
+        this.uploadDate = java.time.LocalDate.now().toString();
+        this.labels = labels != null ? labels : new ArrayList<>();
+        this.isVerified = isVerified;
+        this.finalClassification = finalClassification != null ? finalClassification : new HashMap<>();
     }
 
-    // Generate unique ID
-    private String generateUniqueId() {
-        return UUID.randomUUID().toString(); // Using UUID to generate a unique ID
+    // Empty constructor (ל-Firestore/serialization)
+    public Image() {
+        this.id = UUID.randomUUID().toString(); // יצירת מזהה אוטומטי
     }
 
-    // Add an AI tag to the image
-    public void addAiTag(AiImageTag tag) {
-        if (!this.aiTags.contains(tag)) {
-            this.aiTags.add(tag);
+    public Image(Map<String, Object> map) {
+        this.id = (String) map.get("id");
+        this.url = (String) map.get("url");
+        this.projectId = (String) map.get("projectId");
+        this.category = map.get("category") != null ? Category.valueOf((String) map.get("category")) : null;
+
+        // subcategories
+        this.subcategories = new ArrayList<>();
+        List<String> subcats = (List<String>) map.get("subcategories");
+        if (subcats != null) for (String subcat : subcats) this.subcategories.add(Subcategory.valueOf(subcat));
+
+        // aiClassifications
+        this.aiClassifications = new HashMap<>();
+        Map<String, String> aiMap = (Map<String, String>) map.get("aiClassifications");
+        if (aiMap != null) for (Map.Entry<String, String> entry : aiMap.entrySet())
+            this.aiClassifications.put(Subcategory.valueOf(entry.getKey()), entry.getValue());
+
+        this.description = (String) map.get("description");
+        this.uploadDate = (String) map.get("uploadDate");
+        this.labels = (List<String>) map.get("labels");
+        this.isVerified = (Boolean) map.get("isVerified");
+
+        // finalClassification
+        this.finalClassification = new HashMap<>();
+        Map<String, String> finalMap = (Map<String, String>) map.get("finalClassification");
+        if (finalMap != null) for (Map.Entry<String, String> entry : finalMap.entrySet())
+            this.finalClassification.put(Subcategory.valueOf(entry.getKey()), entry.getValue());
+    }
+
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("url", url);
+        map.put("projectId", projectId);
+        map.put("category", category != null ? category.name() : null);
+
+        // שמירת רשימת תתי־קטגוריות כמחרוזות
+        List<String> subcatNames = new ArrayList<>();
+        if (subcategories != null) {
+            for (Subcategory sub : subcategories) subcatNames.add(sub.name());
         }
+        map.put("subcategories", subcatNames);
+
+        // Map: שם תת־קטגוריה -> ערך
+        Map<String, String> aiClassNames = new HashMap<>();
+        if (aiClassifications != null) {
+            for (Map.Entry<Subcategory, String> entry : aiClassifications.entrySet())
+                aiClassNames.put(entry.getKey().name(), entry.getValue());
+        }
+        map.put("aiClassifications", aiClassNames);
+
+        map.put("description", description);
+        map.put("uploadDate", uploadDate);
+        map.put("labels", labels);
+        map.put("isVerified", isVerified);
+
+        Map<String, String> finalClassNames = new HashMap<>();
+        if (finalClassification != null) {
+            for (Map.Entry<Subcategory, String> entry : finalClassification.entrySet())
+                finalClassNames.put(entry.getKey().name(), entry.getValue());
+        }
+        map.put("finalClassification", finalClassNames);
+
+        return map;
     }
 
-    // Remove an AI tag from the image
-    public void removeAiTag(String tagType, String tagValue) {
-        this.aiTags.removeIf(tag -> tag.getType().equals(tagType) && tag.getValue().equals(tagValue));
-    }
 
-    // Update image category
-    public void updateCategory(Category category) {
-        this.category = category;
-    }
 
-    // Check if the image has a specific feature (AI tag)
-    public boolean hasFeature(String featureType, String featureValue) {
-        return this.aiTags.stream().anyMatch(tag -> tag.getType().equals(featureType) && (featureValue == null || tag.getValue().equals(featureValue)));
-    }
+    // Getters and setters (להוסיף לפי הצורך)
 
-    // Convert the image object to JSON (basic data for transfer)
-    public String toJSON() {
-        return "{" +
-                "\"id\":\"" + id + "\"," +
-                "\"url\":\"" + url + "\"," +
-                "\"category\":\"" + category + "\"," +
-                "\"aiTags\":" + aiTags.toString() + "," +
-                "\"description\":\"" + description + "\"," +
-                "\"uploadDate\":\"" + uploadDate + "\"," +
-                "\"propertyId\":\"" + propertyId + "\"" +
-                "}";
-    }
+    public String getId() { return id; }
+    public String getUrl() { return url; }
+    public String getProjectId() { return projectId; }
+    public Category getCategory() { return category; }
+    public List<Subcategory> getSubcategories() { return subcategories; }
+    public Map<Subcategory, String> getAiClassifications() { return aiClassifications; }
+    public String getDescription() { return description; }
+    public String getUploadDate() { return uploadDate; }
+    public List<String> getLabels() { return labels; }
+    public boolean isVerified() { return isVerified; }
+    public Map<Subcategory, String> getFinalClassification() { return finalClassification; }
 
-    // Getters and setters
-    public String getId() {
-        return id;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public List<AiImageTag> getAiTags() {
-        return aiTags;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getUploadDate() {
-        return uploadDate;
-    }
-
-    public String getPropertyId() {
-        return propertyId;
-    }
-
-    // Setters
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public void setAiTags(List<AiImageTag> aiTags) {
-        this.aiTags = aiTags;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setUploadDate(String uploadDate) {
-        this.uploadDate = uploadDate;
-    }
-
-    public void setPropertyId(String propertyId) {
-        this.propertyId = propertyId;
-    }
+    public void setId(String id) { this.id = id; }
+    public void setUrl(String url) { this.url = url; }
+    public void setProjectId(String projectId) { this.projectId = projectId; }
+    public void setCategory(Category category) { this.category = category; }
+    public void setSubcategories(List<Subcategory> subcategories) { this.subcategories = subcategories; }
+    public void setAiClassifications(Map<Subcategory, String> aiClassifications) { this.aiClassifications = aiClassifications; }
+    public void setDescription(String description) { this.description = description; }
+    public void setUploadDate(String uploadDate) { this.uploadDate = uploadDate; }
+    public void setLabels(List<String> labels) { this.labels = labels; }
+    public void setVerified(boolean verified) { isVerified = verified; }
+    public void setFinalClassification(Map<Subcategory, String> finalClassification) { this.finalClassification = finalClassification; }
 }
