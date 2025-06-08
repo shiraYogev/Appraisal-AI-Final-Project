@@ -20,19 +20,27 @@ public class Appraiser {
     }
 
     private String appraiserId;             // Unique identifier for the appraiser
-    private String fullName;                // Full name of the appraiser
+    private String firstName;               // First name of the appraiser
+    private String lastName;                // Last name of the appraiser
+    private String fullName;                // Full name of the appraiser (firstName + lastName)
     private String email;                   // Email address for contact
     private String phoneNumber;             // Phone number (mobile and/or office)
     private List<Project> activeProjects;    // List of project IDs the appraiser is currently working on
     private List<Project> appraisalHistory;  // List of appraisals made by the appraiser, including property details
-    private AccessPermission accessPermissions;     // Access level for the appraiser (e.g., restricted to their projects, admin access)
+    private AccessPermission accessPermissions;     // Access level for the appraiser (determined by email)
+
+    // Default constructor (required for Firestore)
+    public Appraiser() {
+    }
 
     // Constructor
-    public Appraiser(String appraiserId, String fullName, String email,
+    public Appraiser(String appraiserId, String firstName, String lastName, String email,
                      String phoneNumber, List<Project> activeProjects,
                      List<Project> appraisalHistory, AccessPermission accessPermissions) {
         this.appraiserId = appraiserId;
-        this.fullName = fullName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.fullName = firstName + " " + lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.activeProjects = activeProjects;
@@ -49,12 +57,36 @@ public class Appraiser {
         this.appraiserId = appraiserId;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+        updateFullName();
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+        updateFullName();
+    }
+
     public String getFullName() {
         return fullName;
     }
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    private void updateFullName() {
+        if (firstName != null && lastName != null) {
+            this.fullName = firstName + " " + lastName;
+        }
     }
 
     public String getEmail() {
@@ -97,11 +129,34 @@ public class Appraiser {
         this.accessPermissions = accessPermissions;
     }
 
+    /**
+     * Check if this appraiser has admin privileges
+     */
+    public boolean isAdmin() {
+        return accessPermissions == AccessPermission.ADMIN;
+    }
+
+    /**
+     * Check if this appraiser has user privileges (can edit projects they're assigned to)
+     */
+    public boolean isUser() {
+        return accessPermissions == AccessPermission.USER || accessPermissions == AccessPermission.ADMIN;
+    }
+
+    /**
+     * Check if this appraiser has only viewer privileges
+     */
+    public boolean isViewer() {
+        return accessPermissions == AccessPermission.VIEWER;
+    }
+
     // Method to display appraiser's details in a readable format
     @Override
     public String toString() {
         return "Appraiser{" +
                 "appraiserId='" + appraiserId + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +

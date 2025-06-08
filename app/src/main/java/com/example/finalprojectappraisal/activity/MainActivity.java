@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // מעבר לדף התחברות
-                //Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // מעבר לדף הרשמה
-                //Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -122,33 +122,34 @@ public class MainActivity extends AppCompatActivity {
 
     // אימות החשבון של Google עם Firebase
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        // קבלת פרטי האימות מחשבון Google
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
 
-        // התחברות ל-Firebase באמצעות פרטי Google
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // אימות הצליח
                         FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                        // הצגת הודעת ברכה עם שם המשתמש
-                        if (user != null && user.getDisplayName() != null) {
-                            Toast.makeText(MainActivity.this, "ברוך הבא " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+                        // בדיקה אם זה משתמש חדש
+                        boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
+
+                        if (isNewUser) {
+                            // שליחה לדף השלמת פרטים
+                            Intent intent = new Intent(MainActivity.this, AppraiserSetupActivity.class);
+                            startActivity(intent);
                         } else {
-                            Toast.makeText(MainActivity.this, "התחברות הצליחה!", Toast.LENGTH_SHORT).show();
+                            // שליחה לדף הבית
+                            Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
+                            startActivity(intent);
                         }
 
-                        // מעבר לדף הבא
-                        updateUI(user);
+                        finish(); // סגור את המסך הנוכחי
                     } else {
-                        // אימות נכשל
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
                         Toast.makeText(MainActivity.this, "האימות נכשל", Toast.LENGTH_SHORT).show();
-                        updateUI(null);
                     }
                 });
     }
+
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {

@@ -78,6 +78,9 @@
             android:name=".activity.LoginActivity"
             android:exported="true" />
         <activity
+            android:name=".activity.AppraiserSetupActivity"
+            android:exported="true" />
+        <activity
             android:name=".activity.DoorTestWithGiminiActivity"
             android:exported="true" />
         <activity
