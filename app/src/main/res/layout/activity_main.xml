@@ -7,7 +7,7 @@
     android:gravity="center_horizontal"
     android:padding="24dp"
     android:background="#E8F5E9"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <TextView
         android:id="@+id/title"
