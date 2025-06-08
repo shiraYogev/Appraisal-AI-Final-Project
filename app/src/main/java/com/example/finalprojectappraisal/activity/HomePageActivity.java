@@ -2,6 +2,7 @@ package com.example.finalprojectappraisal.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -17,6 +18,9 @@ import androidx.cardview.widget.CardView;
 import com.example.finalprojectappraisal.R;
 import com.example.finalprojectappraisal.activity.newProject.ClientDetailsActivity;
 import com.example.finalprojectappraisal.activity.newProject.UploadImagesActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class HomePageActivity extends AppCompatActivity {
 
@@ -46,7 +50,16 @@ public class HomePageActivity extends AppCompatActivity {
         initializeViews();
         setupClickListeners();
         setupAnimations();
+
+        userNameText = findViewById(R.id.user_name);
         loadUserData();
+
+        LinearLayout btnMyProjects = findViewById(R.id.button_my_projects);
+        btnMyProjects.setOnClickListener(v -> {
+            Intent intent = new Intent(HomePageActivity.this, MyProjectsActivity.class);
+            startActivity(intent);
+        });
+
     }
 
     private void initializeViews() {
@@ -167,19 +180,6 @@ public class HomePageActivity extends AppCompatActivity {
         recentCard.startAnimation(recentAnimation);
     }
 
-    private void loadUserData() {
-        // טעינת נתונים מהמאגר או מהשרת
-        // TODO: יישום אמיתי עם בסיס נתונים
-
-        // לדוגמה - נתונים סטטיים
-        userNameText.setText("שירה כהן");
-
-        // Set dynamic greeting based on time of day
-        setDynamicGreeting();
-
-        // טעינת מספר פרויקטים מבסיס הנתונים
-        loadProjectStats();
-    }
 
     private void setDynamicGreeting() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -287,4 +287,37 @@ public class HomePageActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         // TODO: שחזור מצב שמור
     }
+
+
+    private void loadUserData() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            userNameText.setText("משתמש לא מחובר");
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("appraisers")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String fullName = documentSnapshot.getString("fullName");
+                        userNameText.setText(fullName != null ? fullName : "שמאי");
+                    } else {
+                        userNameText.setText("שמאי לא ידוע");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    userNameText.setText("שגיאה בטעינת שם");
+                    Log.e("HomePageActivity", "Error loading user data", e);
+                });
+
+        // Greeting and stats remain the same
+        setDynamicGreeting();
+        loadProjectStats();
+    }
+
 }
